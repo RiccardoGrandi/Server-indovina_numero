@@ -1,8 +1,5 @@
 package com.example;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -11,36 +8,20 @@ public class App
     public static void main( String[] args )
     {
         try {
+            System.out.println("Server avviato");
             ServerSocket server = new ServerSocket(3000);
-
-            int randomNum = (int)(Math.random() * 100+1); 
             
-            Socket s = server.accept();
-            
-            BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            DataOutputStream out = new DataOutputStream(s.getOutputStream());
-             
-            int tentativi = 0;
-            int numRicevuto = 0;
+            while (true) {
+                Socket s = server.accept();
 
-            do {
-                String stringaRicevuta = in.readLine();
-                numRicevuto = Integer.parseInt(stringaRicevuta);
-                System.out.println(numRicevuto);
-                if (numRicevuto < randomNum) {
-                    out.writeBytes(1 + "\n");
-                } else if (numRicevuto > randomNum) {
-                    out.writeBytes(2 + "\n"); 
-                }
-                tentativi++;
-            } while (numRicevuto != randomNum);
+                System.out.println("Il client si è connesso");
 
-           
-            out.writeBytes(3 + "\n");
-            out.writeBytes(tentativi + "\n");    
+                int randomNum = (int)(Math.random() * 100+1); 
+                
+                NuovoThread t1 = new NuovoThread(s, randomNum);
+                t1.start();
+            }
             
-            server.close();
-            s.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("Errore durante l'istanza");
